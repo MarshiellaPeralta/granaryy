@@ -4,7 +4,7 @@ class UserState with ChangeNotifier {
   int? _userId;  // This corresponds to `acc_id`
   String? _username;  // This corresponds to `username`
 
-  static const String API_HOST = "http://192.168.100.154/gran_API"; // Adjust if needed
+  static const String API_HOST = "http://grannary.cnlabworks.io"; // Adjust if needed
 
   int? get userId => _userId;
   String? get username => _username;

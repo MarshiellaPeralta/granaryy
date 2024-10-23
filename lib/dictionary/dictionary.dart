@@ -29,39 +29,39 @@ class _DictionaryHomePageState extends State<DictionaryHomePage> {
   final List<Word> words = [
     Word(
         english: "abandon",
-        tagalog: "iwan",
-        ilocano: "abuloyan",
-        pangasinense: "baybay-an"
+        tagalog: "tagalog: iwan",
+        ilocano: "ilocano: abuloyan",
+        pangasinense: "pangasinense: baybay-an"
     ),
     Word(
         english: "abandoned",
-        tagalog: "iniwan",
-        ilocano: "tinaynan",
-        pangasinense: "nabaybay-an"
+        tagalog: "tagalog: iniwan",
+        ilocano: "ilocano: tinaynan",
+        pangasinense: "pangasinense: nabaybay-an"
     ),
     Word(
         english: "abbreviate",
-        tagalog: "pinaikli",
-        ilocano: "pinatikey",
-        pangasinense: "napaababa"
+        tagalog: "tagalog: pinaikli",
+        ilocano: "ilocano: pinatikey",
+        pangasinense: "pangasinense: napaababa"
     ),
     Word(
         english: "abdomen",
-        tagalog: "tiyan",
-        ilocano: "eges",
-        pangasinense: "ti tian"
+        tagalog: "tagalog: tiyan",
+        ilocano: "ilocano: eges",
+        pangasinense: "pangasinense: ti tian"
     ),
     Word(
         english: "abhor",
-        tagalog: "suklam",
-        ilocano: "suklam",
-        pangasinense: "suklam"
+        tagalog: "tagalog: suklam",
+        ilocano: "ilocano: suklam",
+        pangasinense: "pangasinense: suklam"
     ),
     Word(
         english: "abide",
-        tagalog: "sumunod",
-        ilocano: "ontumbok",
-        pangasinense: "sumurot"
+        tagalog: "tagalog: sumunod",
+        ilocano: "ilocano: ontumbok",
+        pangasinense: "pangasinense: sumurot"
     ),
     Word(
         english: "ability",
@@ -14645,19 +14645,7 @@ class _DictionaryHomePageState extends State<DictionaryHomePage> {
                                 Text(word.ilocano),
                               ],
                             ),
-                            trailing: IconButton(
-                              icon: Icon(
-                                word.isFavorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: Colors.orange,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  word.isFavorite = !word.isFavorite;
-                                });
-                              },
-                            ),
+
                           ),
                         );
                       },
@@ -14678,13 +14666,13 @@ class Word {
   final String ilocano;
   final String pangasinense;
   final String tagalog;
-  bool isFavorite;
+
 
   Word({
     required this.english,
     required this.ilocano,
     required this.pangasinense,
     required this.tagalog,
-    this.isFavorite = false,
+
   });
 }
