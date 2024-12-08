@@ -29,6 +29,11 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
+    android {
+        defaultConfig {
+            multiDexEnabled true
+        }
+    }
 
     buildTypes {
         release {

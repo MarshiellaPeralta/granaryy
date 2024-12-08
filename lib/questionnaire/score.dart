@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'multiple_choice.dart';
 import '../dashboard.dart';
 
-class ScoreScreen extends StatelessWidget {
+class ScoreScreen extends StatefulWidget {
   final int score;
   final int totalQuestions;
   final int correctAnswers;
@@ -17,148 +16,212 @@ class ScoreScreen extends StatelessWidget {
   });
 
   @override
+  _ScoreScreenState createState() => _ScoreScreenState();
+}
+
+class _ScoreScreenState extends State<ScoreScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scoreAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: Duration(seconds: 2),
+      vsync: this,
+    );
+    _scoreAnimation = Tween<double>(begin: 0, end: widget.score.toDouble()).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    )..addListener(() {
+      setState(() {});
+    });
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  double getCompletionPercentage() {
+    return widget.correctAnswers / widget.totalQuestions;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Custom AppBar with curved corners
-          Container(
-            height: MediaQuery.of(context).size.height * 0.45, // Adjusted height
-            decoration: BoxDecoration(
-              color: Color(0xFF0A1128), // Deep Navy Blue for the app bar
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1E3C72), Color(0xFF2A5298)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Column(
+          children: [
+            SizedBox(height: 80),
+            // Score Summary Title
+            Center(
+              child: Text(
+                'Score Summary',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-            child: AppBar(
-              backgroundColor: Colors.transparent, // Make AppBar transparent
-              elevation: 0,
-              centerTitle: true,
-            ),
-          ),
-          // Make the content scrollable
-          SingleChildScrollView(
-            child: Column(
+            SizedBox(height: 40),
+            // Animated Circular Score Display with Radial Progress Indicator
+            Stack(
+              alignment: Alignment.center,
               children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.15), // Space for the score
-                // Circular Score Display
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CircleAvatar(
-                      radius: 80,
-                      backgroundColor: Colors.lightBlueAccent,
+                SizedBox(
+                  width: 140,
+                  height: 140,
+                  child: CircularProgressIndicator(
+                    value: getCompletionPercentage(),
+                    backgroundColor: Colors.grey[300],
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent),
+                    strokeWidth: 10,
+                  ),
+                ),
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.lightBlueAccent, Colors.blueAccent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    CircleAvatar(
-                      radius: 70,
-                      backgroundColor: Colors.blueGrey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Your Score',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            '$score pt',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                        offset: Offset(0, 4),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 30),
-                // Statistics Card
-                Card(
-                  margin: EdgeInsets.symmetric(horizontal: 20),
-                  elevation: 5,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      children: [
-                        // First Row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Completion Column
-                            _buildStatColumn(
-                              icon: Icons.circle,
-                              iconColor: Colors.green,
-                              value: '${(correctAnswers / totalQuestions * 100).toInt()}%',
-                              label: 'Completion',
-                            ),
-                            // Total Questions Column
-                            _buildStatColumn(
-                              icon: Icons.circle,
-                              iconColor: Colors.purple,
-                              value: '$totalQuestions',
-                              label: 'Total Questions',
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 20),
-                        // Second Row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Correct Answers Column
-                            _buildStatColumn(
-                              icon: Icons.circle,
-                              iconColor: Colors.green,
-                              value: '$correctAnswers',
-                              label: 'Correct Answer',
-                            ),
-                            // Wrong Answers Column
-                            _buildStatColumn(
-                              icon: Icons.circle,
-                              iconColor: Colors.red,
-                              value: '$wrongAnswers',
-                              label: 'Wrong Answer',
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 15),
-                // Bottom Button Row
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildIconButton(Icons.refresh, 'Play Again', Colors.blue, () {
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-                      }),
-                      _buildIconButton(Icons.home, 'Home', Colors.purple, () {
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => SmartHomeApp()));
-                      }),
-                      _buildIconButton(Icons.exit_to_app, 'Exit', Colors.green, () {
-                        // Close the app
-                        SystemNavigator.pop();
-                      }),
                     ],
                   ),
                 ),
-                SizedBox(height: 30),
+                CircleAvatar(
+                  radius: 60,
+                  backgroundColor: Colors.blueGrey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Your Score',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white70,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        '${_scoreAnimation.value.toInt()} pt',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
-          ),
-        ],
+            SizedBox(height: 30),
+            // Statistics Card
+            Card(
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              elevation: 10,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  children: [
+                    // First Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildStatColumn(
+                          icon: Icons.check_circle_outline,
+                          iconColor: Colors.green,
+                          value: '${(getCompletionPercentage() * 100).toInt()}%',
+                          label: 'Completion',
+                        ),
+                        _buildStatColumn(
+                          icon: Icons.help_outline,
+                          iconColor: Colors.blue,
+                          value: '${widget.totalQuestions}',
+                          label: 'Total Questions',
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    // Second Row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildStatColumn(
+                          icon: Icons.check,
+                          iconColor: Colors.green,
+                          value: '${widget.correctAnswers}',
+                          label: 'Correct Answers',
+                        ),
+                        _buildStatColumn(
+                          icon: Icons.close,
+                          iconColor: Colors.red,
+                          value: '${widget.wrongAnswers}',
+                          label: 'Wrong Answers',
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Spacer(),
+            // Bottom Button Row with Animation
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildActionButton(
+                    icon: Icons.refresh,
+                    label: 'Play Again',
+                    gradientColors: [Colors.blueAccent, Colors.lightBlue],
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                      );
+                    },
+                  ),
+                  _buildActionButton(
+                    icon: Icons.home,
+                    label: 'Home',
+                    gradientColors: [Colors.purple, Colors.deepPurpleAccent],
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => SmartHomeApp()),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 30),
+          ],
+        ),
       ),
     );
   }
@@ -170,39 +233,71 @@ class ScoreScreen extends StatelessWidget {
     required String label,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(icon, size: 10, color: iconColor),
-            SizedBox(width: 5),
+            Icon(icon, size: 20, color: iconColor),
+            SizedBox(width: 8),
             Text(
               value,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 18,
+                fontSize: 20,
               ),
             ),
           ],
         ),
         SizedBox(height: 5),
-        Text(label),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 14,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildIconButton(IconData icon, String label, Color color, Function() onPressed) {
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required List<Color> gradientColors,
+    required VoidCallback onPressed,
+  }) {
     return GestureDetector(
       onTap: onPressed,
       child: Column(
         children: [
-          CircleAvatar(
-            backgroundColor: color.withOpacity(0.2),
-            radius: 30,
-            child: Icon(icon, size: 30, color: color),
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: gradientColors,
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 6,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 30),
           ),
-          SizedBox(height: 5),
-          Text(label, style: TextStyle(fontSize: 12)),
+          SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.white, // Changed to white
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );

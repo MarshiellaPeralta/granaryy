@@ -12,8 +12,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // Navigate to home after 3 seconds
-    Timer(Duration(seconds: 8), () {
+    // Navigate to home after 10 seconds
+    Timer(Duration(seconds: 10), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => GrannaryLoginScreen()),
@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
         height: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/splash.gif'),
+            image: AssetImage('assets/startup.gif'),
             fit: BoxFit.cover, // Makes the image fullscreen
           ),
         ),
